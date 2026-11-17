@@ -1,0 +1,17 @@
+name: Public download infrastructure check
+on:
+  push:
+    paths: [.github/workflows/infrastructure-check.yml]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish harmless test asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          printf '%s\n' 'CoreFlow public download verification' 'This is not an application or an update package.' > public-download-check.txt
+          gh release create infrastructure-check-${{ github.run_id }} public-download-check.txt --target '${{ github.sha }}' --prerelease --latest=false --title 'Infrastructure check (no application)' --notes 'Anonymous download test only. No application, installer, update manifest, or source code.'
